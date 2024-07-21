@@ -1,15 +1,11 @@
-#!python
-
 import os, sys, platform, json, subprocess
 import SCons
 from SCons.Variables import BoolVariable
-
 
 def add_sources(sources, dirpath, extension):
     for f in os.listdir(dirpath):
         if f.endswith("." + extension):
             sources.append(dirpath + "/" + f)
-
 
 def replace_flags(flags, replaces):
     for k, v in replaces.items():
@@ -20,12 +16,10 @@ def replace_flags(flags, replaces):
         else:
             flags[flags.index(k)] = v
 
-
 def validate_godotcpp_dir(key, val, env):
     normalized = val if os.path.isabs(val) else os.path.join(env.Dir("#").abspath, val)
     if not os.path.isdir(normalized):
         raise UserError("GDExtension directory ('%s') does not exist: %s" % (key, val))
-
 
 env = Environment()
 opts = Variables(["customs.py"], ARGUMENTS)
@@ -51,9 +45,43 @@ if "android_api_level" not in ARGUMENTS:
 # Recent godot-cpp versions disables exceptions by default, but libdatachannel requires them.
 ARGUMENTS["disable_exceptions"] = "no"
 
-sconstruct = "thirdparty/godot-cpp/SConstruct"
-cpp_env = SConscript(sconstruct)
+# Load godot-cpp SConstruct
+sconstruct_cpp = "thirdparty/godot-cpp/SConstruct"
+cpp_env = SConscript(sconstruct_cpp)
 env = cpp_env.Clone()
+
+# Load godot-steam-audio SConstruct
+sconstruct_steam_audio = "thirdparty/godot-steam-audio/SCSub"
+steam_audio_env = cpp_env.Clone()
+
+steam_audio_env.Append(CPPPATH=["thirdparty/godot-steam-audio/src"])
+
+if steam_audio_env.get("CC", "").lower() == "cl":
+    # Building with MSVC
+    steam_audio_env.AppendUnique(CCFLAGS=("/I",  "src/lib/steamaudio/unity/include/phonon/"))
+else:
+    steam_audio_env.AppendUnique(CCFLAGS=("-isystem",  "src/lib/steamaudio/unity/include/phonon/"))
+
+sources = Glob("src/*.cpp")
+
+steam_audio_lib_path = steam_audio_env.get("STEAM_AUDIO_LIB_PATH", "src/lib/steamaudio/lib")
+
+if steam_audio_env["platform"] == "linux":
+    steam_audio_env.Append(LIBPATH=[f'{steam_audio_lib_path}/linux-x64'])
+    steam_audio_env.Append(LIBS=["libphonon.so"])
+elif steam_audio_env["platform"] == "windows":
+    steam_audio_env.Append(LIBPATH=[f'{steam_audio_lib_path}/windows-x64'])
+    steam_audio_env.Append(LIBS=["phonon"])
+elif steam_audio_env["platform"] == "macos":
+    steam_audio_env.Append(LIBPATH=[f'{steam_audio_lib_path}/osx'])
+    steam_audio_env.Append(LIBS=["libphonon.dylib"])
+
+library = env.SharedLibrary(
+    "project/addons/godot-steam-audio/bin/godot-steam-audio{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
+    source=sources,
+)
+
+Default(library)
 
 if cpp_env.get("is_msvc", False):
     # Make sure we don't build with static cpp on MSVC (default in recent godot-cpp versions).
@@ -90,7 +118,7 @@ else:
     result_path = os.path.join("bin", "extension-4.1", "webrtc")
 
 # Our includes and sources
-env.Append(CPPPATH=["src/", "thirdparty/gdextension_webrtc"])
+env.Append(CPPPATH=["thirdparty/godot-cpp/include/", "thirdparty/godot-cpp/include/godot_cpp", "thirdparty/gdextension_webrtc", "thirdparty/gdextension_webrtc/net"])
 env.Append(CPPDEFINES=["RTC_STATIC"])
 sources = []
 sources.append(

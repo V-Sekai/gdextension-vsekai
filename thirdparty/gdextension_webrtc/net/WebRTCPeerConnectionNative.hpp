@@ -31,11 +31,9 @@
 #ifndef WEBRTC_PEER_NATIVE
 #define WEBRTC_PEER_NATIVE
 
-#include <Godot.hpp>
-#include <Reference.hpp>
-#include <WebRTCPeerConnectionGDNative.hpp>
-
-#include <net/godot_net.h>
+#include <godot_cpp/godot.hpp>
+#include <godot_cpp/classes/ref.hpp>
+#include <godot_cpp/core/defs.hpp>
 
 /* Forward declare interface functions */
 godot_int get_connection_state_wp(const void *);
@@ -52,8 +50,8 @@ void close_wp(void *);
 
 namespace godot {
 
-class WebRTCPeerConnectionNative : public godot::WebRTCPeerConnectionGDNative {
-	GODOT_CLASS(WebRTCPeerConnectionNative, godot::WebRTCPeerConnectionGDNative);
+class WebRTCPeerConnectionNative : public WebRTCPeerConnectionGDNative {
+	GODOT_CLASS(WebRTCPeerConnectionNative, WebRTCPeerConnectionGDNative);
 
 protected:
 	godot_net_webrtc_peer_connection interface = {
