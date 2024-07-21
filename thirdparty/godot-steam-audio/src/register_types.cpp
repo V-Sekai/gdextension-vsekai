@@ -43,15 +43,3 @@ void uninit_ext(ModuleInitializationLevel p_level) {
 		return;
 	}
 }
-
-extern "C" {
-GDExtensionBool GDE_EXPORT init_extension(GDExtensionInterfaceGetProcAddress p_get_proc_address, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization) {
-	godot::GDExtensionBinding::InitObject init_obj(p_get_proc_address, p_library, r_initialization);
-
-	init_obj.register_initializer(init_ext);
-	init_obj.register_terminator(uninit_ext);
-	init_obj.set_minimum_library_initialization_level(MODULE_INITIALIZATION_LEVEL_SCENE);
-
-	return init_obj.init();
-}
-}

@@ -117,7 +117,7 @@ else:
     result_path = os.path.join("bin", "extension-4.1", "webrtc")
 
 # Our includes and sources
-env.Append(CPPPATH=["thirdparty/godot-cpp/include/", "thirdparty/godot-cpp/include/godot_cpp", "thirdparty/gdextension_webrtc", "thirdparty/gdextension_webrtc/net"])
+env.Append(CPPPATH=["thirdparty/godot-steam-audio", "thirdparty/godot-cpp/include/", "thirdparty/godot-cpp/include/godot_cpp", "thirdparty/gdextension_webrtc", "thirdparty/gdextension_webrtc/net"])
 env.Append(CPPDEFINES=["RTC_STATIC"])
 sources = []
 sources.append(
