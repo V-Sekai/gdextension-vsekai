@@ -34,8 +34,8 @@
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
-#include "thirdparty/gdextension_webrtc/WebRTCLibDataChannel.hpp"
-#include "thirdparty/gdextension_webrtc/WebRTCLibPeerConnection.hpp"
+#include "WebRTCLibDataChannel.hpp"
+#include "WebRTCLibPeerConnection.hpp"
 
 #ifdef _WIN32
 // See upstream godot-cpp GH-771.

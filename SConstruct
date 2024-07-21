@@ -95,8 +95,8 @@ env.Append(CPPDEFINES=["RTC_STATIC"])
 sources = []
 sources.append(
     [
-        "thirdparty/gdextension_webrtc/src/WebRTCLibDataChannel.cpp",
-        "thirdparty/gdextension_webrtc/src/WebRTCLibPeerConnection.cpp",
+        "thirdparty/gdextension_webrtc/WebRTCLibDataChannel.cpp",
+        "thirdparty/gdextension_webrtc/WebRTCLibPeerConnection.cpp",
     ]
 )
 if env["godot_version"] == "3":
