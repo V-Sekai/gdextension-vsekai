@@ -1,6 +1,3 @@
-[submodule "godot-cpp-4.0"]
-	path = godot-cpp-4.0
-	url = https://github.com/godotengine/godot-cpp.git
 [submodule "libdatachannel"]
 	path = thirdparty/libdatachannel
 	url = https://github.com/paullouisageneau/libdatachannel.git
