@@ -1,9 +1,11 @@
-#ifndef GDEXAMPLE_REGISTER_TYPES_H
-#define GDEXAMPLE_REGISTER_TYPES_H
+#ifndef GODOT_STEAM_REGISTER_TYPES_H
+#define GODOT_STEAM_REGISTER_TYPES_H
 
-#include <gdextension_interface.h>
+#include <godot_cpp/core/class_db.hpp>
 
-void init_ext(godot::ModuleInitializationLevel p_level);
-void uninit_ext(godot::ModuleInitializationLevel p_level);
+using namespace godot;
 
-#endif // GDEXAMPLE_REGISTER_TYPES_H
+void init_ext(ModuleInitializationLevel p_level);
+void uninit_ext(ModuleInitializationLevel p_level);
+
+#endif // GODOT_STEAM_REGISTER_TYPES_H
