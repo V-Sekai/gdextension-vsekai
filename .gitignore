@@ -7,3 +7,5 @@ bin/*
 *.swp
 __pycache__/*
 *.pyc
+project/addons/godot-steam-audio/bin/
+.DS_Store

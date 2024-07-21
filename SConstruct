@@ -1,14 +1,11 @@
-#!python
-
 import os, sys, platform, json, subprocess
 import SCons
-
+from SCons.Variables import BoolVariable
 
 def add_sources(sources, dirpath, extension):
     for f in os.listdir(dirpath):
         if f.endswith("." + extension):
             sources.append(dirpath + "/" + f)
-
 
 def replace_flags(flags, replaces):
     for k, v in replaces.items():
@@ -19,12 +16,10 @@ def replace_flags(flags, replaces):
         else:
             flags[flags.index(k)] = v
 
-
 def validate_godotcpp_dir(key, val, env):
     normalized = val if os.path.isabs(val) else os.path.join(env.Dir("#").abspath, val)
     if not os.path.isdir(normalized):
         raise UserError("GDExtension directory ('%s') does not exist: %s" % (key, val))
-
 
 env = Environment()
 opts = Variables(["customs.py"], ARGUMENTS)
@@ -50,86 +45,35 @@ if "android_api_level" not in ARGUMENTS:
 # Recent godot-cpp versions disables exceptions by default, but libdatachannel requires them.
 ARGUMENTS["disable_exceptions"] = "no"
 
-if env["godot_version"] == "3":
-    if "platform" in ARGUMENTS and ARGUMENTS["platform"] == "macos":
-        ARGUMENTS["platform"] = "osx"  # compatibility with old osx name
+# Load godot-cpp SConstruct
+sconstruct_cpp = "thirdparty/godot-cpp/SConstruct"
+cpp_env = SConscript(sconstruct_cpp)
+env = cpp_env.Clone()
 
-    sconstruct = env.get("godot_cpp", "godot-cpp-3.x") + "/SConstruct"
-    cpp_env = SConscript(sconstruct)
+# Load godot-steam-audio SConstruct
+sconstruct_steam_audio = "thirdparty/godot-steam-audio/SCSub"
 
-    # Patch base env
-    replace_flags(
-        cpp_env["CCFLAGS"],
-        {
-            "-mios-simulator-version-min=10.0": "-mios-simulator-version-min=11.0",
-            "-miphoneos-version-min=10.0": "-miphoneos-version-min=11.0",
-            "/std:c++14": "/std:c++17",
-            "-std=c++14": "-std=c++17",
-        },
-    )
+env.Append(CPPPATH=["thirdparty/godot-steam-audio/src"])
 
-    env = cpp_env.Clone()
-
-    if env["target"] == "debug":
-        env.Append(CPPDEFINES=["DEBUG_ENABLED"])
-
-    if env["platform"] == "windows" and env["use_mingw"]:
-        env.Append(LINKFLAGS=["-static-libgcc"])
-
-    if env["platform"] == "osx":
-        env["platform"] = "macos"  # compatibility with old osx name
-        ARGUMENTS["platform"] = "macos"
-        env["CC"] = "clang"  # CC is not set in 3.x and can result in it being "gcc".
-
-    if env["platform"] == "ios":
-        env["ios_min_version"] = "11.0"
-
-    # Normalize suffix
-    if env["platform"] in ["windows", "linux"]:
-        env["arch"] = ARGUMENTS.get("arch", "x86_32" if env["bits"] == "32" else "x86_64")
-        env["arch_suffix"] = env["arch"]
-    elif env["platform"] == "macos":
-        env["arch"] = env["macos_arch"]
-        env["arch_suffix"] = env["arch"]
-    elif env["platform"] == "ios":
-        env["arch"] = "arm32" if env["ios_arch"] == "armv7" else env["ios_arch"]
-        env["arch_suffix"] = env["ios_arch"] + (".simulator" if env["ios_simulator"] else "")
-    elif env["platform"] == "android":
-        env["arch"] = {
-            "armv7": "arm32",
-            "arm64v8": "arm64",
-            "x86": "x86_32",
-            "x86_64": "x86_64",
-        }[env["android_arch"]]
-        env["arch_suffix"] = env["arch"]
-
-    target_compat = "template_" + env["target"]
-    env["suffix"] = ".{}.{}.{}".format(env["platform"], target_compat, env["arch_suffix"])
-    env["debug_symbols"] = False
-
-    # Some windows specific hacks.
-    if env["platform"] == "windows":
-        if sys.platform not in ["win32", "msys"]:
-            # Set missing CC for MinGW from upstream build module.
-            if env["bits"] == "64":
-                env["CC"] = "x86_64-w64-mingw32-gcc"
-            elif env["bits"] == "32":
-                env["CC"] = "i686-w64-mingw32-gcc"
-        elif not env["use_mingw"]:
-            # Mark as MSVC build (would have failed to build the library otherwise).
-            env["is_msvc"] = True
-    # Some linux specific hacks to allow cross-compiling for non-x86 machines.
-    if env["platform"] == "linux" and env["arch"] not in ("x86_32", "x86_64"):
-        for flags in (env["CCFLAGS"], env["LINKFLAGS"], cpp_env["CCFLAGS"], cpp_env["LINKFLAGS"]):
-            replace_flags(flags, {"-m32": None, "-m64": None})
-elif env["godot_version"] == "4.0":
-    sconstruct = env.get("godot_cpp", "godot-cpp-4.0") + "/SConstruct"
-    cpp_env = SConscript(sconstruct)
-    env = cpp_env.Clone()
+if env.get("CC", "").lower() == "cl":
+    # Building with MSVC
+    env.AppendUnique(CCFLAGS=("/I",  "src/lib/steamaudio/unity/include/phonon/"))
 else:
-    sconstruct = env.get("godot_cpp", "godot-cpp") + "/SConstruct"
-    cpp_env = SConscript(sconstruct)
-    env = cpp_env.Clone()
+    env.AppendUnique(CCFLAGS=("-isystem",  "src/lib/steamaudio/unity/include/phonon/"))
+
+sources = Glob("thirdparty/godot-steam-audio/src/*.cpp")
+
+steam_audio_lib_path = env.get("STEAM_AUDIO_LIB_PATH", "thirdparty/godot-steam-audio/src/lib")
+
+if env["platform"] == "linux":
+    env.Append(LIBPATH=[f'{steam_audio_lib_path}/linux-x64'])
+    env.Append(LIBS=["libphonon.so"])
+elif env["platform"] == "windows":
+    env.Append(LIBPATH=[f'{steam_audio_lib_path}/windows-x64'])
+    env.Append(LIBS=["phonon"])
+elif env["platform"] == "macos":
+    env.Append(LIBPATH=[f'{steam_audio_lib_path}/osx'])
+    env.Append(LIBS=["libphonon.dylib"])
 
 if cpp_env.get("is_msvc", False):
     # Make sure we don't build with static cpp on MSVC (default in recent godot-cpp versions).
@@ -158,31 +102,20 @@ if env["platform"] == "macos" and os.environ.get("OSXCROSS_ROOT", ""):
 opts.Update(env)
 
 target = env["target"]
-if env["godot_version"] == "3":
-    result_path = os.path.join("bin", "gdnative", "webrtc" if env["target"] == "release" else "webrtc_debug")
-elif env["godot_version"] == "4.0":
-    result_path = os.path.join("bin", "extension-4.0", "webrtc")
-else:
-    result_path = os.path.join("bin", "extension-4.1", "webrtc")
+result_path = os.path.join("bin", "extension-4.1", "webrtc")
 
 # Our includes and sources
-env.Append(CPPPATH=["src/"])
+env.Append(CPPPATH=["/Users/ernest.lee/Documents/gde-vsekai/thirdparty/godot-steam-audio/src/lib/steamaudio/fmod/include/phonon", "thirdparty/godot-steam-audio/src/lib/steamaudio/core/src/core", "thirdparty/godot-steam-audio", "thirdparty/godot-cpp/include/", "thirdparty/godot-cpp/include/godot_cpp", "thirdparty/gdextension_webrtc", "thirdparty/gdextension_webrtc/net"])
 env.Append(CPPDEFINES=["RTC_STATIC"])
-sources = []
 sources.append(
     [
-        "src/WebRTCLibDataChannel.cpp",
-        "src/WebRTCLibPeerConnection.cpp",
+        "thirdparty/gdextension_webrtc/WebRTCLibDataChannel.cpp",
+        "thirdparty/gdextension_webrtc/WebRTCLibPeerConnection.cpp",
     ]
 )
-if env["godot_version"] == "3":
-    env.Append(CPPDEFINES=["GDNATIVE_WEBRTC"])
-    sources.append("src/init_gdnative.cpp")
-    add_sources(sources, "src/net/", "cpp")
-else:
-    sources.append("src/init_gdextension.cpp")
-    if env["godot_version"] == "4.0":
-        env.Append(CPPDEFINES=["GDEXTENSION_WEBRTC_40"])
+sources.append("src/init_gdextension.cpp")
+if env["godot_version"] == "4.0":
+    env.Append(CPPDEFINES=["GDEXTENSION_WEBRTC_40"])
 
 # Add our build tools
 for tool in ["openssl", "cmake", "rtc"]:
@@ -236,23 +169,10 @@ else:
 
 Default(library)
 
-# GDNativeLibrary
-if env["godot_version"] == "3":
-    gdnlib = "webrtc" if target != "debug" else "webrtc_debug"
-    ext = ".tres"
-    extfile = env.Substfile(
-        os.path.join(result_path, gdnlib + ext),
-        "misc/webrtc" + ext,
-        SUBST_DICT={
-            "{GDNATIVE_PATH}": gdnlib,
-            "{TARGET}": "template_" + env["target"],
-        },
-    )
-else:
-    extfile = env.Substfile(
-        os.path.join(result_path, "webrtc.gdextension"),
-        "misc/webrtc.gdextension",
-        SUBST_DICT={"{GODOT_VERSION}": env["godot_version"]},
-    )
+extfile = env.Substfile(
+    os.path.join(result_path, "webrtc.gdextension"),
+    "misc/webrtc.gdextension",
+    SUBST_DICT={"{GODOT_VERSION}": env["godot_version"]},
+)
 
 Default(extfile)

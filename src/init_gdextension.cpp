@@ -37,6 +37,8 @@
 #include "WebRTCLibDataChannel.hpp"
 #include "WebRTCLibPeerConnection.hpp"
 
+#include "src/register_types.hpp"
+
 #ifdef _WIN32
 // See upstream godot-cpp GH-771.
 #undef GDN_EXPORT
@@ -66,15 +68,13 @@ void unregister_webrtc_extension_types(ModuleInitializationLevel p_level) {
 }
 
 extern "C" {
-#ifdef GDEXTENSION_WEBRTC_40
-GDExtensionBool GDE_EXPORT webrtc_extension_init(const GDExtensionInterface *p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization) {
-#else
-GDExtensionBool GDE_EXPORT webrtc_extension_init(const GDExtensionInterfaceGetProcAddress p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization) {
-#endif
+GDExtensionBool GDE_EXPORT vsekai_extension_init(const GDExtensionInterfaceGetProcAddress p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization) {
 	GDExtensionBinding::InitObject init_obj(p_interface, p_library, r_initialization);
 
 	init_obj.register_initializer(register_webrtc_extension_types);
 	init_obj.register_terminator(unregister_webrtc_extension_types);
+	init_obj.register_initializer(init_ext);
+	init_obj.register_terminator(uninit_ext);
 	init_obj.set_minimum_library_initialization_level(MODULE_INITIALIZATION_LEVEL_SCENE);
 
 	return init_obj.init();
