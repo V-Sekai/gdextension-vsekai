@@ -154,7 +154,7 @@ int SteamAudioStreamPlayback::play_stream(const Ref<AudioStream> &p_stream, floa
 
 	stream = p_stream;
 	stream_playback = stream->instantiate_playback();
-	stream_playback->start(p_from_offset);
+	stream_playback->_start(p_from_offset);
 
 	return 0;
 }
@@ -166,19 +166,19 @@ void SteamAudioStreamPlayback::_start(double from_pos) {
 			play_stream(stream, float(from_pos), 0.0, 1.0); // FIXME: do not assume these params
 		}
 		return;
-	} else if (stream_playback->is_playing()) {
+	} else if (stream_playback->_is_playing()) {
 		return;
 	}
-	stream_playback->start(from_pos);
+	stream_playback->_start(from_pos);
 	is_active.store(true);
 }
 
 void SteamAudioStreamPlayback::_stop() {
 	is_active.store(false);
-	if (stream_playback == nullptr || !stream_playback->is_playing()) {
+	if (stream_playback == nullptr || !stream_playback->_is_playing()) {
 		return;
 	}
-	stream_playback->stop();
+	stream_playback->_stop();
 }
 
 bool SteamAudioStreamPlayback::_is_playing() const { return is_active; }
