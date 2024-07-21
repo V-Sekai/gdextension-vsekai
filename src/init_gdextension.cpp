@@ -78,9 +78,5 @@ GDExtensionBool GDE_EXPORT vsekai_extension_init(const GDExtensionInterfaceGetPr
 	init_obj.set_minimum_library_initialization_level(MODULE_INITIALIZATION_LEVEL_SCENE);
 
 	return init_obj.init();
-
-
-
-	return init_obj.init();
 }
 }

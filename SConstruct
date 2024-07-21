@@ -61,7 +61,7 @@ if env.get("CC", "").lower() == "cl":
 else:
     env.AppendUnique(CCFLAGS=("-isystem",  "src/lib/steamaudio/unity/include/phonon/"))
 
-sources = Glob("src/*.cpp")
+sources = Glob("thirdparty/godot-steam-audio/src/*.cpp")
 
 steam_audio_lib_path = env.get("STEAM_AUDIO_LIB_PATH", "thirdparty/godot-steam-audio/src/lib")
 
@@ -74,13 +74,6 @@ elif env["platform"] == "windows":
 elif env["platform"] == "macos":
     env.Append(LIBPATH=[f'{steam_audio_lib_path}/osx'])
     env.Append(LIBS=["libphonon.dylib"])
-
-library = env.SharedLibrary(
-    "project/addons/godot-steam-audio/bin/godot-steam-audio{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
-    source=sources,
-)
-
-Default(library)
 
 if cpp_env.get("is_msvc", False):
     # Make sure we don't build with static cpp on MSVC (default in recent godot-cpp versions).
@@ -109,31 +102,20 @@ if env["platform"] == "macos" and os.environ.get("OSXCROSS_ROOT", ""):
 opts.Update(env)
 
 target = env["target"]
-if env["godot_version"] == "3":
-    result_path = os.path.join("bin", "gdnative", "webrtc" if env["target"] == "release" else "webrtc_debug")
-elif env["godot_version"] == "4.0":
-    result_path = os.path.join("bin", "extension-4.0", "webrtc")
-else:
-    result_path = os.path.join("bin", "extension-4.1", "webrtc")
+result_path = os.path.join("bin", "extension-4.1", "webrtc")
 
 # Our includes and sources
-env.Append(CPPPATH=["thirdparty/godot-steam-audio", "thirdparty/godot-cpp/include/", "thirdparty/godot-cpp/include/godot_cpp", "thirdparty/gdextension_webrtc", "thirdparty/gdextension_webrtc/net"])
+env.Append(CPPPATH=["/Users/ernest.lee/Documents/gde-vsekai/thirdparty/godot-steam-audio/src/lib/steamaudio/fmod/include/phonon", "thirdparty/godot-steam-audio/src/lib/steamaudio/core/src/core", "thirdparty/godot-steam-audio", "thirdparty/godot-cpp/include/", "thirdparty/godot-cpp/include/godot_cpp", "thirdparty/gdextension_webrtc", "thirdparty/gdextension_webrtc/net"])
 env.Append(CPPDEFINES=["RTC_STATIC"])
-sources = []
 sources.append(
     [
         "thirdparty/gdextension_webrtc/WebRTCLibDataChannel.cpp",
         "thirdparty/gdextension_webrtc/WebRTCLibPeerConnection.cpp",
     ]
 )
-if env["godot_version"] == "3":
-    env.Append(CPPDEFINES=["GDNATIVE_WEBRTC"])
-    sources.append("src/init_gdnative.cpp")
-    add_sources(sources, "thirdparty/gdextension_webrtc/src/net/", "cpp")
-else:
-    sources.append("src/init_gdextension.cpp")
-    if env["godot_version"] == "4.0":
-        env.Append(CPPDEFINES=["GDEXTENSION_WEBRTC_40"])
+sources.append("src/init_gdextension.cpp")
+if env["godot_version"] == "4.0":
+    env.Append(CPPDEFINES=["GDEXTENSION_WEBRTC_40"])
 
 # Add our build tools
 for tool in ["openssl", "cmake", "rtc"]:
@@ -187,23 +169,10 @@ else:
 
 Default(library)
 
-# GDNativeLibrary
-if env["godot_version"] == "3":
-    gdnlib = "webrtc" if target != "debug" else "webrtc_debug"
-    ext = ".tres"
-    extfile = env.Substfile(
-        os.path.join(result_path, gdnlib + ext),
-        "misc/webrtc" + ext,
-        SUBST_DICT={
-            "{GDNATIVE_PATH}": gdnlib,
-            "{TARGET}": "template_" + env["target"],
-        },
-    )
-else:
-    extfile = env.Substfile(
-        os.path.join(result_path, "webrtc.gdextension"),
-        "misc/webrtc.gdextension",
-        SUBST_DICT={"{GODOT_VERSION}": env["godot_version"]},
-    )
+extfile = env.Substfile(
+    os.path.join(result_path, "webrtc.gdextension"),
+    "misc/webrtc.gdextension",
+    SUBST_DICT={"{GODOT_VERSION}": env["godot_version"]},
+)
 
 Default(extfile)
