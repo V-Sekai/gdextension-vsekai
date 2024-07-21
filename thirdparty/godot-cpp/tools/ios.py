@@ -1,7 +1,7 @@
 import os
 import sys
 import subprocess
-from SCons.Variables import BoolVariable
+from SCons.Variables import *
 
 if sys.version_info < (3,):
 
