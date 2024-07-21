@@ -51,7 +51,7 @@ if "android_api_level" not in ARGUMENTS:
 # Recent godot-cpp versions disables exceptions by default, but libdatachannel requires them.
 ARGUMENTS["disable_exceptions"] = "no"
 
-sconstruct = "godot-cpp/SConstruct"
+sconstruct = "thirdparty/godot-cpp/SConstruct"
 cpp_env = SConscript(sconstruct)
 env = cpp_env.Clone()
 
