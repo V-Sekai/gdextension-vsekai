@@ -1,0 +1,460 @@
+[gd_scene load_steps=41 format=3 uid="uid://bilxmr83dwsgw"]
+
+[ext_resource type="Script" path="res://src/player.gd" id="1_c2adp"]
+[ext_resource type="SteamAudioMaterial" uid="uid://dbai50r63k346" path="res://addons/godot-steam-audio/materials/rock_material.tres" id="1_wtcfy"]
+[ext_resource type="AudioStream" uid="uid://badsntcuvwx3t" path="res://sound/2.mp3" id="3_0iivb"]
+[ext_resource type="PackedScene" uid="uid://6sgtpvtg5aic" path="res://scenes/wooden_house.tscn" id="3_tysju"]
+[ext_resource type="AudioStream" uid="uid://ca6667b63t1vv" path="res://sound/pluck1.mp3" id="5_00edw"]
+[ext_resource type="AudioStream" uid="uid://4axfbe53b587" path="res://sound/pluck2.mp3" id="6_dw5dv"]
+[ext_resource type="SteamAudioMaterial" uid="uid://cexuij8fef5ay" path="res://addons/godot-steam-audio/materials/carpet_material.tres" id="6_ph4pe"]
+[ext_resource type="Script" path="res://src/random_pluck.gd" id="7_gx8pe"]
+[ext_resource type="Script" path="res://src/door.gd" id="8_jqgel"]
+[ext_resource type="PackedScene" uid="uid://b4t303yij1i0s" path="res://scenes/dynamic_test.tscn" id="10_nroe5"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_nkwlr"]
+
+[sub_resource type="Sky" id="Sky_0bghj"]
+sky_material = SubResource("PhysicalSkyMaterial_nkwlr")
+
+[sub_resource type="Environment" id="Environment_gdnyc"]
+background_mode = 2
+sky = SubResource("Sky_0bghj")
+ambient_light_source = 3
+reflected_light_source = 2
+
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_v0408"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ljilg"]
+albedo_color = Color(0, 0.278431, 0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_8yuob"]
+material = SubResource("StandardMaterial3D_ljilg")
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_n75us"]
+data = PackedVector3Array(1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0, -1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_j0ktp"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dg8l6"]
+albedo_color = Color(0.976471, 0.133333, 0.286275, 1)
+emission_enabled = true
+emission = Color(0.976471, 0.133333, 0.286275, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_dnvdu"]
+material = SubResource("StandardMaterial3D_dg8l6")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_w72gs"]
+streams_count = 2
+stream_0/stream = ExtResource("5_00edw")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("6_dw5dv")
+stream_1/weight = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pyn86"]
+albedo_color = Color(0.976471, 0.133333, 0.286275, 1)
+emission_enabled = true
+emission = Color(0.976471, 0.133333, 0.286275, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_s7swq"]
+material = SubResource("StandardMaterial3D_pyn86")
+
+[sub_resource type="Animation" id="Animation_elb2f"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("OmniLight3D:light_energy")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [2.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshInstance3D:mesh:material:emission_energy_multiplier")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+
+[sub_resource type="Animation" id="Animation_8pkb1"]
+resource_name = "fade"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("OmniLight3D:light_energy")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [2.0, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshInstance3D:mesh:material:emission_energy_multiplier")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_b3x3w"]
+_data = {
+"RESET": SubResource("Animation_elb2f"),
+"fade": SubResource("Animation_8pkb1")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v6p4c"]
+albedo_color = Color(0.690196, 0.164706, 0, 1)
+emission_enabled = true
+emission = Color(0.0509804, 0.0509804, 0.0509804, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qows3"]
+material = SubResource("StandardMaterial3D_v6p4c")
+size = Vector3(0.21, 2.48, 1.165)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_ktcq1"]
+data = PackedVector3Array(-0.105, 1.24, 0.5825, 0.105, 1.24, 0.5825, -0.105, -1.24, 0.5825, 0.105, 1.24, 0.5825, 0.105, -1.24, 0.5825, -0.105, -1.24, 0.5825, 0.105, 1.24, -0.5825, -0.105, 1.24, -0.5825, 0.105, -1.24, -0.5825, -0.105, 1.24, -0.5825, -0.105, -1.24, -0.5825, 0.105, -1.24, -0.5825, 0.105, 1.24, 0.5825, 0.105, 1.24, -0.5825, 0.105, -1.24, 0.5825, 0.105, 1.24, -0.5825, 0.105, -1.24, -0.5825, 0.105, -1.24, 0.5825, -0.105, 1.24, -0.5825, -0.105, 1.24, 0.5825, -0.105, -1.24, -0.5825, -0.105, 1.24, 0.5825, -0.105, -1.24, 0.5825, -0.105, -1.24, -0.5825, 0.105, 1.24, 0.5825, -0.105, 1.24, 0.5825, 0.105, 1.24, -0.5825, -0.105, 1.24, 0.5825, -0.105, 1.24, -0.5825, 0.105, 1.24, -0.5825, -0.105, -1.24, 0.5825, 0.105, -1.24, 0.5825, -0.105, -1.24, -0.5825, 0.105, -1.24, 0.5825, 0.105, -1.24, -0.5825, -0.105, -1.24, -0.5825)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nsbs5"]
+albedo_color = Color(0.501961, 0, 0, 1)
+metallic_specular = 0.2
+
+[sub_resource type="BoxMesh" id="BoxMesh_kcg1x"]
+material = SubResource("StandardMaterial3D_nsbs5")
+size = Vector3(2, 2.5, 0.1)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_1fgh1"]
+data = PackedVector3Array(-1, 1.25, 0.05, 1, 1.25, 0.05, -1, -1.25, 0.05, 1, 1.25, 0.05, 1, -1.25, 0.05, -1, -1.25, 0.05, 1, 1.25, -0.05, -1, 1.25, -0.05, 1, -1.25, -0.05, -1, 1.25, -0.05, -1, -1.25, -0.05, 1, -1.25, -0.05, 1, 1.25, 0.05, 1, 1.25, -0.05, 1, -1.25, 0.05, 1, 1.25, -0.05, 1, -1.25, -0.05, 1, -1.25, 0.05, -1, 1.25, -0.05, -1, 1.25, 0.05, -1, -1.25, -0.05, -1, 1.25, 0.05, -1, -1.25, 0.05, -1, -1.25, -0.05, 1, 1.25, 0.05, -1, 1.25, 0.05, 1, 1.25, -0.05, -1, 1.25, 0.05, -1, 1.25, -0.05, 1, 1.25, -0.05, -1, -1.25, 0.05, 1, -1.25, 0.05, -1, -1.25, -0.05, 1, -1.25, 0.05, 1, -1.25, -0.05, -1, -1.25, -0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1bakx"]
+size = Vector3(1, 2, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3ut0g"]
+size = Vector3(1, 2, 2)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_wvy22"]
+top_radius = 1.0
+bottom_radius = 1.0
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_uysk2"]
+radius = 1.0
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_p7fj6"]
+radius = 0.7
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4k0mc"]
+radius = 0.7
+
+[sub_resource type="SphereMesh" id="SphereMesh_jyu74"]
+radius = 1.0
+height = 2.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_mfyrx"]
+radius = 1.0
+
+[node name="Root" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.0283352, -0.959332, 0.280855, 0.280166, 0.277328, 0.919019, -0.959533, 0.0526454, 0.27663, 0, 9, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_gdnyc")
+camera_attributes = SubResource("CameraAttributesPhysical_v0408")
+
+[node name="SteamAudioConfig" type="SteamAudioConfig" parent="."]
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(200, 0, 0, 0, 200, 0, 0, 0, 200, 0, 0, 0)
+mesh = SubResource("PlaneMesh_8yuob")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Ground"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_n75us")
+
+[node name="SteamAudioGeometry" type="SteamAudioGeometry" parent="Ground/StaticBody3D/CollisionShape3D"]
+material = ExtResource("1_wtcfy")
+
+[node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("cam")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8.6, 1, 3.4)
+script = ExtResource("1_c2adp")
+cam = NodePath("Camera3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("CapsuleShape3D_j0ktp")
+
+[node name="Camera3D" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+
+[node name="SteamAudioListener" type="SteamAudioListener" parent="Player/Camera3D"]
+
+[node name="Wooden House" parent="." instance=ExtResource("3_tysju")]
+
+[node name="SteamAudioPlayer" type="SteamAudioPlayer" parent="Wooden House"]
+reflection = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0.0999999)
+stream = ExtResource("3_0iivb")
+volume_db = 20.0
+autoplay = true
+panning_strength = 0.0
+metadata/_edit_group_ = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Wooden House/SteamAudioPlayer"]
+light_energy = 2.0
+shadow_enabled = true
+omni_range = 10.0
+omni_attenuation = 2.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Wooden House/SteamAudioPlayer"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_dnvdu")
+
+[node name="Wooden House with RandomStream" parent="." instance=ExtResource("3_tysju")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
+
+[node name="Pluck Randomizer" type="SteamAudioPlayer" parent="Wooden House with RandomStream" node_paths=PackedStringArray("anim")]
+min_attenuation_distance = 5.0
+reflection = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+stream = SubResource("AudioStreamRandomizer_w72gs")
+volume_db = 20.0
+panning_strength = 0.0
+script = ExtResource("7_gx8pe")
+anim = NodePath("AnimationPlayer")
+metadata/_edit_group_ = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Wooden House with RandomStream/Pluck Randomizer"]
+light_energy = 2.0
+shadow_enabled = true
+omni_range = 10.0
+omni_attenuation = 2.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Wooden House with RandomStream/Pluck Randomizer"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_s7swq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Wooden House with RandomStream/Pluck Randomizer"]
+libraries = {
+"": SubResource("AnimationLibrary_b3x3w")
+}
+
+[node name="Door House" parent="." instance=ExtResource("3_tysju")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12)
+
+[node name="Pluck Randomizer" type="SteamAudioPlayer" parent="Door House" node_paths=PackedStringArray("anim")]
+min_attenuation_distance = 5.0
+reflection = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+stream = SubResource("AudioStreamRandomizer_w72gs")
+volume_db = 20.0
+panning_strength = 0.0
+script = ExtResource("7_gx8pe")
+anim = NodePath("../../Wooden House with RandomStream/Pluck Randomizer/AnimationPlayer")
+metadata/_edit_group_ = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Door House/Pluck Randomizer"]
+light_energy = 2.0
+shadow_enabled = true
+omni_range = 10.0
+omni_attenuation = 2.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Door House/Pluck Randomizer"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_s7swq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Door House/Pluck Randomizer"]
+libraries = {
+"": SubResource("AnimationLibrary_b3x3w")
+}
+
+[node name="Door" type="MeshInstance3D" parent="Door House"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75308, 1.25421, 0)
+mesh = SubResource("BoxMesh_qows3")
+script = ExtResource("8_jqgel")
+metadata/_edit_group_ = true
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Door House/Door"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Door House/Door/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_ktcq1")
+
+[node name="SteamAudioGeometry" type="SteamAudioGeometry" parent="Door House/Door"]
+
+[node name="Carpet House" parent="." instance=ExtResource("3_tysju")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6.9)
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="Carpet House"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, -1.5)
+mesh = SubResource("BoxMesh_kcg1x")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Carpet House/MeshInstance3D3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Carpet House/MeshInstance3D3/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_1fgh1")
+
+[node name="SteamAudioGeometry" type="SteamAudioGeometry" parent="Carpet House/MeshInstance3D3"]
+material = ExtResource("6_ph4pe")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="Carpet House"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 1.5)
+mesh = SubResource("BoxMesh_kcg1x")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Carpet House/MeshInstance3D5"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Carpet House/MeshInstance3D5/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_1fgh1")
+
+[node name="SteamAudioGeometry" type="SteamAudioGeometry" parent="Carpet House/MeshInstance3D5"]
+material = ExtResource("6_ph4pe")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="Carpet House"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 2.5, -0.0999994)
+mesh = SubResource("BoxMesh_kcg1x")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Carpet House/MeshInstance3D6"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Carpet House/MeshInstance3D6/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_1fgh1")
+
+[node name="SteamAudioGeometry" type="SteamAudioGeometry" parent="Carpet House/MeshInstance3D6"]
+material = ExtResource("6_ph4pe")
+
+[node name="SteamAudioPlayer" type="SteamAudioPlayer" parent="Carpet House"]
+distance_attenuation = true
+min_attenuation_distance = 5.0
+reflection = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0.0999999)
+stream = ExtResource("3_0iivb")
+attenuation_model = 3
+volume_db = 20.0
+autoplay = true
+panning_strength = 0.0
+metadata/_edit_group_ = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Carpet House/SteamAudioPlayer"]
+light_energy = 2.0
+shadow_enabled = true
+omni_range = 10.0
+omni_attenuation = 2.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Carpet House/SteamAudioPlayer"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_dnvdu")
+
+[node name="Collider Test" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 11)
+
+[node name="SteamAudioPlayer3" type="SteamAudioPlayer" parent="Collider Test"]
+min_attenuation_distance = 5.0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, 1)
+stream = ExtResource("3_0iivb")
+volume_db = 20.0
+autoplay = true
+panning_strength = 0.0
+metadata/_edit_group_ = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Collider Test/SteamAudioPlayer3"]
+light_energy = 2.0
+shadow_enabled = true
+omni_range = 10.0
+omni_attenuation = 2.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Collider Test/SteamAudioPlayer3"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_dnvdu")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Collider Test"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1, 1)
+mesh = SubResource("BoxMesh_1bakx")
+skeleton = NodePath("../SteamAudioPlayer3")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Collider Test/MeshInstance3D2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collider Test/MeshInstance3D2/StaticBody3D"]
+shape = SubResource("BoxShape3D_3ut0g")
+
+[node name="SteamAudioGeometry" type="SteamAudioGeometry" parent="Collider Test/MeshInstance3D2/StaticBody3D/CollisionShape3D"]
+material = ExtResource("1_wtcfy")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="Collider Test"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 1, 3.2)
+mesh = SubResource("CylinderMesh_wvy22")
+skeleton = NodePath("../SteamAudioPlayer3")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Collider Test/MeshInstance3D3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collider Test/MeshInstance3D3/StaticBody3D"]
+shape = SubResource("CylinderShape3D_uysk2")
+
+[node name="SteamAudioGeometry" type="SteamAudioGeometry" parent="Collider Test/MeshInstance3D3/StaticBody3D/CollisionShape3D"]
+material = ExtResource("1_wtcfy")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="Collider Test"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1, 0.900001)
+mesh = SubResource("CapsuleMesh_p7fj6")
+skeleton = NodePath("../SteamAudioPlayer3")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Collider Test/MeshInstance3D4"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collider Test/MeshInstance3D4/StaticBody3D"]
+shape = SubResource("CapsuleShape3D_4k0mc")
+
+[node name="SteamAudioGeometry" type="SteamAudioGeometry" parent="Collider Test/MeshInstance3D4/StaticBody3D/CollisionShape3D"]
+material = ExtResource("1_wtcfy")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="Collider Test"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3, 1, -0.999999)
+mesh = SubResource("SphereMesh_jyu74")
+skeleton = NodePath("../SteamAudioPlayer3")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Collider Test/MeshInstance3D5"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collider Test/MeshInstance3D5/StaticBody3D"]
+shape = SubResource("SphereShape3D_mfyrx")
+
+[node name="SteamAudioGeometry" type="SteamAudioGeometry" parent="Collider Test/MeshInstance3D5/StaticBody3D/CollisionShape3D"]
+material = ExtResource("1_wtcfy")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="UI"]
+layout_mode = 1
+offset_right = 208.0
+offset_bottom = 126.0
+text = "[WASD] Move
+[Space] Jump
+[Mouse] Look around
+[1] Toggle door
+[2] Move door"
+fit_content = true
+scroll_active = false
+
+[node name="RotationTest" parent="." instance=ExtResource("10_nroe5")]
