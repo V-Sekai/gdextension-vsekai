@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import os
-import sys
+import os, sys
+
 from pathlib import Path
 
 sys.path.insert(1, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-from binding_generator import generate_bindings, get_file_list
+from binding_generator import get_file_list, generate_bindings
 
 api_filepath = "gdextension/extension_api.json"
 bits = "64"

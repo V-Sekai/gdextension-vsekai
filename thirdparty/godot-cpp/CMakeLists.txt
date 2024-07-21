@@ -3,7 +3,7 @@
 #
 # godot-cpp cmake arguments
 # GODOT_GDEXTENSION_DIR:		Path to the directory containing GDExtension interface header and API JSON file
-# GODOT_CPP_SYSTEM_HEADERS		Mark the header files as SYSTEM. This may be useful to suppress warnings in projects including this one.
+# GODOT_CPP_SYSTEM_HEADERS		Mark the header files as SYSTEM. This may be useful to supress warnings in projects including this one.
 # GODOT_CPP_WARNING_AS_ERROR	Treat any warnings as errors
 # GODOT_CUSTOM_API_FILE:		Path to a custom GDExtension API JSON file (takes precedence over `gdextension_dir`)
 # FLOAT_PRECISION:				Floating-point precision level ("single", "double")
@@ -37,7 +37,7 @@
 # Todo
 # Test build for Windows, Mac and mingw.
 
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.12)
 project(godot-cpp LANGUAGES CXX)
 
 option(GENERATE_TEMPLATE_GET_NODE "Generate a template version of the Node class's get_node." ON)

@@ -35,7 +35,7 @@
 
 namespace godot {
 
-template <typename T>
+template <class T>
 class VSet {
 	Vector<T> _data;
 

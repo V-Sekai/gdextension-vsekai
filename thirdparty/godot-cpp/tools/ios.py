@@ -1,9 +1,7 @@
 import os
-import subprocess
 import sys
-
-import common_compiler_flags
-from SCons.Variables import BoolVariable
+import subprocess
+from SCons.Variables import *
 
 if sys.version_info < (3,):
 
@@ -106,5 +104,3 @@ def generate(env):
     env.Append(LINKFLAGS=["-isysroot", env["IOS_SDK_PATH"], "-F" + env["IOS_SDK_PATH"]])
 
     env.Append(CPPDEFINES=["IOS_ENABLED", "UNIX_ENABLED"])
-
-    common_compiler_flags.generate(env)

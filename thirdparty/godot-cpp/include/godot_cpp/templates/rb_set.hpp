@@ -38,7 +38,7 @@
 
 namespace godot {
 
-template <typename T, typename C = Comparator<T>, typename A = DefaultAllocator>
+template <class T, class C = Comparator<T>, class A = DefaultAllocator>
 class RBSet {
 	enum Color {
 		RED,

@@ -32,6 +32,7 @@ def configure(env):
         return rv
 
     def mySpawn(sh, escape, cmd, args, env):
+
         newargs = " ".join(args[1:])
         cmdline = cmd + " " + newargs
 
