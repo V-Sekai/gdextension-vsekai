@@ -67,9 +67,9 @@ void unregister_webrtc_extension_types(ModuleInitializationLevel p_level) {
 
 extern "C" {
 #ifdef GDEXTENSION_WEBRTC_40
-GDExtensionBool GDE_EXPORT webrtc_extension_init(const GDExtensionInterface *p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization) {
+GDExtensionBool GDE_EXPORT vsekai_extension_init(const GDExtensionInterface *p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization) {
 #else
-GDExtensionBool GDE_EXPORT webrtc_extension_init(const GDExtensionInterfaceGetProcAddress p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization) {
+GDExtensionBool GDE_EXPORT vsekai_extension_init(const GDExtensionInterfaceGetProcAddress p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization) {
 #endif
 	GDExtensionBinding::InitObject init_obj(p_interface, p_library, r_initialization);
 
