@@ -52,29 +52,28 @@ env = cpp_env.Clone()
 
 # Load godot-steam-audio SConstruct
 sconstruct_steam_audio = "thirdparty/godot-steam-audio/SCSub"
-steam_audio_env = cpp_env.Clone()
 
-steam_audio_env.Append(CPPPATH=["thirdparty/godot-steam-audio/src"])
+env.Append(CPPPATH=["thirdparty/godot-steam-audio/src"])
 
-if steam_audio_env.get("CC", "").lower() == "cl":
+if env.get("CC", "").lower() == "cl":
     # Building with MSVC
-    steam_audio_env.AppendUnique(CCFLAGS=("/I",  "src/lib/steamaudio/unity/include/phonon/"))
+    env.AppendUnique(CCFLAGS=("/I",  "src/lib/steamaudio/unity/include/phonon/"))
 else:
-    steam_audio_env.AppendUnique(CCFLAGS=("-isystem",  "src/lib/steamaudio/unity/include/phonon/"))
+    env.AppendUnique(CCFLAGS=("-isystem",  "src/lib/steamaudio/unity/include/phonon/"))
 
 sources = Glob("src/*.cpp")
 
-steam_audio_lib_path = steam_audio_env.get("STEAM_AUDIO_LIB_PATH", "src/lib/steamaudio/lib")
+steam_audio_lib_path = env.get("STEAM_AUDIO_LIB_PATH", "thirdparty/godot-steam-audio/src/lib")
 
-if steam_audio_env["platform"] == "linux":
-    steam_audio_env.Append(LIBPATH=[f'{steam_audio_lib_path}/linux-x64'])
-    steam_audio_env.Append(LIBS=["libphonon.so"])
-elif steam_audio_env["platform"] == "windows":
-    steam_audio_env.Append(LIBPATH=[f'{steam_audio_lib_path}/windows-x64'])
-    steam_audio_env.Append(LIBS=["phonon"])
-elif steam_audio_env["platform"] == "macos":
-    steam_audio_env.Append(LIBPATH=[f'{steam_audio_lib_path}/osx'])
-    steam_audio_env.Append(LIBS=["libphonon.dylib"])
+if env["platform"] == "linux":
+    env.Append(LIBPATH=[f'{steam_audio_lib_path}/linux-x64'])
+    env.Append(LIBS=["libphonon.so"])
+elif env["platform"] == "windows":
+    env.Append(LIBPATH=[f'{steam_audio_lib_path}/windows-x64'])
+    env.Append(LIBS=["phonon"])
+elif env["platform"] == "macos":
+    env.Append(LIBPATH=[f'{steam_audio_lib_path}/osx'])
+    env.Append(LIBS=["libphonon.dylib"])
 
 library = env.SharedLibrary(
     "project/addons/godot-steam-audio/bin/godot-steam-audio{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),

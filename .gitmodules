@@ -4,3 +4,5 @@
 [submodule "openssl"]
 	path = thirdparty/openssl
 	url = https://github.com/openssl/openssl.git
+[submodule "thirdparty/godot-steam-audio/src/lib/steamaudio"]
+	url = https://github.com/ValveSoftware/steam-audio.git
